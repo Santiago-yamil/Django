@@ -12,6 +12,12 @@ from .permissions import IsSolicitante, IsEvaluador
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
+
+
+
 
 
 class ApoyoViewSet(viewsets.ModelViewSet):
@@ -62,3 +68,23 @@ class SolicitudViewSet(viewsets.ModelViewSet):
             solicitud.save()
             return Response({'status': 'Solicitud enviada'})
         return Response({'error': 'No se puede enviar'}, status=400)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def seleccion_final(request):
+    seleccionados = request.data.get("seleccionados", [])
+    for item in seleccionados:
+        curp = item.get("curp")
+        score = item.get("score")
+        try:
+            solicitud = Solicitud.objects.get(curp=curp)
+            solicitud.estado = "SELECCIONADA"
+            # si tienes campo score_final, lo guardas:
+            if hasattr(solicitud, "score_final"):
+                solicitud.score_final = score
+            solicitud.save()
+        except Solicitud.DoesNotExist:
+            continue
+
+    return Response({"status": "Selección final guardada ✅"}, status=status.HTTP_200_OK)

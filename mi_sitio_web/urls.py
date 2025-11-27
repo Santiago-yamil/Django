@@ -42,19 +42,12 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('principal.urls')),  # aquí montamos la API
-    # Swagger UI
+    path('api/', include('principal.urls')),  # tu API
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    # Redoc UI
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),   # login
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # refrescar token
-
-
-]
-
-
-urlpatterns += [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
+
+
+
