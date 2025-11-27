@@ -17,6 +17,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 
 
+from django.http import JsonResponse
+from .services import ComparadorTextos
 
 
 
@@ -88,3 +90,30 @@ def seleccion_final(request):
             continue
 
     return Response({"status": "Selección final guardada ✅"}, status=status.HTTP_200_OK)
+
+
+try:
+    comparador_texto = ComparadorTextos()
+except Exception as e:
+    # Manejar error si no se puede cargar el modelo (ej: falta memoria)
+    print(f"Error al cargar el modelo de SentenceTransformer: {e}")
+    comparador_texto = None
+
+def api_comparar_textos(request):
+    if request.method == 'POST' and comparador_texto:
+        # Asume que los datos vienen en el cuerpo de la petición (POST)
+        data = request.POST # Para form-data
+        # data = json.loads(request.body) # Para JSON/API
+        
+        texto_perfil = data.get('texto_perfil', '')
+        texto_requisitos = data.get('texto_requisitos', '')
+        
+        if not texto_perfil or not texto_requisitos:
+            return JsonResponse({"error": "Ambos textos son requeridos."}, status=400)
+
+        # Ejecuta la lógica
+        resultados = comparador_texto.evaluar_similitud(texto_perfil, texto_requisitos)
+        
+        return JsonResponse(resultados)
+        
+    return JsonResponse({"error": "Método no permitido o servicio no disponible."}, status=405)
