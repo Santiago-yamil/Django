@@ -24,6 +24,13 @@ class Apoyo(models.Model):
 
 # Tabla de Solicitudes (Relacionada a Apoyos)
 class Solicitud(models.Model):
+    ESTADOS = [
+        ('EN_CAPTURA', 'En captura'),
+        ('ENVIADA', 'Enviada'),
+        ('APROBADA', 'Aprobada'),
+        ('RECHAZADA', 'Rechazada'),
+    ]
+
     # El id es SERIAL/int por defecto en Django, no es necesario declararlo
     curp = models.CharField(max_length=18, unique=True)
     nombre = models.CharField(max_length=100)
@@ -34,7 +41,12 @@ class Solicitud(models.Model):
     keywords = models.TextField(blank=True, null=True)
     ine_url = models.CharField(max_length=255, blank=True, null=True)
     cv_url = models.CharField(max_length=255, blank=True, null=True)
-    estado = models.CharField(max_length=50, default='ENVIADA')
+    estado = models.CharField(
+        max_length=50,
+        choices=ESTADOS,
+        default='EN_CAPTURA'
+    )
+
     
     # Clave Foránea: Relación con la tabla Apoyos
     apoyo = models.ForeignKey(
