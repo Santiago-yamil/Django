@@ -83,7 +83,7 @@ class Evaluacion(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'Evaluaciones'
+        db_table = 'evaluaciones'
 
 
 # Tabla de Notificaciones (Relacionada a Solicitudes)
